@@ -6,9 +6,13 @@ VAGRANTFILE_API_VERSION = "2"
 
 $shell = <<SCRIPT
 ### optional #############################
-## 以下のコメントを有効にすると, remote_db のコピーをローカルに作成する
 sudo -u postgres createuser -d -S -R test_db_user
 sudo -u postgres createdb -U test_db_user -E utf-8 test_db
+
+sudo mysql --user=root --password=password -e "CREATE DATABASE test_db;"
+sudo mysql --user=root --password=password -e "GRANT ALL ON test_db.* TO test_db_user@'%' IDENTIFIED BY 'password';"
+
+## 以下のコメントを有効にすると, remote_db のコピーをローカルに作成する
 #
 # sudo -u vagrant echo "remote_host:5432:remote_db:remote_db_user:password" > .pgpass
 # chown vagrant:vagrant .pgpass
@@ -25,16 +29,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "nrel/CentOS-6.5-i386"
   config.vm.hostname = "centos"
 
-  # config.vm.box = "CentOS-56-x64-packages-puppet-2.6.10-chef-0.10.6"
-  # config.vm.box_url = "https://dl.dropbox.com/u/7196/vagrant/CentOS-56-x64-packages-puppet-2.6.10-chef-0.10.6.box"
-  # config.vm.box_url = "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.1/centos65-x86_64-20131205.box"
-
   config.vm.network :forwarded_port, guest: 80, host: 8888
   config.vm.network :forwarded_port, guest: 443, host: 8443
   config.vm.synced_folder ".", "/var/tmp/www", :mount_options => ["dmode=777,fmode=666"]
 
   config.vm.provision :chef_solo do |chef|
-    chef.log_level = :debug
+    # chef.log_level = :debug
     chef.cookbooks_path = ["chef/cookbooks", "chef/site-cookbooks"]
 
     chef.roles_path = "chef/roles"
@@ -42,27 +42,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     chef.add_recipe     "iptables::disabled"
     chef.add_recipe     "apache2"
-    chef.add_recipe     "apache2::mod_php5"
     chef.add_recipe     "apache2::mod_ssl"
     chef.add_recipe     "apache2::mod_rewrite"
-    chef.add_recipe     "php"
     chef.add_recipe     "postgresql::client"
     chef.add_recipe     "postgresql::server"
+    chef.add_recipe     "php::source"
+    chef.add_recipe     "mysql::client"
+    chef.add_recipe     "mysql::server"
 
     chef.json = {
       :apache => {
         :version => "2.2",
         :default_site_enabled => true,
-        :docroot_dir => "/var/tmp/www/ec-site/html",
+        :docroot_dir => "/var/tmp/www/public_html",
         :listen_ports => [80, 443]
       },
       :php => {
-        :version => "5.3",
+        :install_method => "source",
+        :version => "5.4.39",
+        :checksum => "9af5d2c3782aa94b7336401755dc44b62dc4ea881bf5e39540a4c7181b54d945",
         :directives => {
           :display_errors => 'On',
           "date.timezone" => "Asia/Tokyo",
         },
-        :packages => ["php-mbstring", "php-pgsql", "php-pear", "php-xml", "php-gd", "php-devel"]
       },
       :postgresql => {
         :password => {
@@ -74,11 +76,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           {:type => 'host', :db => 'all', :user => 'all', :addr => '127.0.0.1/32', :method => 'trust'},
           {:type => 'host', :db => 'all', :user => 'all', :addr => '::1/128', :method => 'trust'}
         ]
+      },
+      :mysql => {
+        :version => "5.5",
+        :server_root_password => "password"
       }
     }
   end
 
-  config.omnibus.chef_version = '11.12.4'
+  config.omnibus.chef_version = '12.2.1'
   # config.berkshelf.enabled = true
 
   config.vm.provision "shell", inline: $shell
