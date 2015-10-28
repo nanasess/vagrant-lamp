@@ -3,7 +3,9 @@ vagrant-lamp
 
 ## 概要
 
-﻿CentOS, Apache, PostgreSQL::client, PHPの環境をVagrantで作ります。
+﻿CentOS, Apache, PostgreSQL, MySQL, PHP の環境を Vagrant で作ります。
+
+EC-CUBE3 の下限動作環境です。
 
 ## 設定方法
 
