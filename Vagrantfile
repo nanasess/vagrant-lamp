@@ -59,8 +59,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       },
       :php => {
         :install_method => "source",
-        :version => "5.4.39",
-        :checksum => "9af5d2c3782aa94b7336401755dc44b62dc4ea881bf5e39540a4c7181b54d945",
+        :url => "http://museum.php.net/php5",
+        :version => "5.3.9",
+        :checksum => "424c6312ab23d1f8b0135cd52c2c08054d1ee9b21691e5ca3ebb0775670b7aee",
         :directives => {
           :display_errors => 'On',
           "date.timezone" => "Asia/Tokyo",

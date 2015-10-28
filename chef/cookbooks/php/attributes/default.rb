@@ -89,9 +89,6 @@ default['php']['configure_options'] = %W{--prefix=#{php['prefix_dir']}
                                          --with-config-file-scan-dir=#{php['ext_conf_dir']}
                                          --with-pear
                                          --with-apxs2
-                                         --enable-fpm
-                                         --with-fpm-user=#{php['fpm_user']}
-                                         --with-fpm-group=#{php['fpm_group']}
                                          --with-zlib
                                          --with-openssl
                                          --with-kerberos
