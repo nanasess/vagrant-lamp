@@ -79,7 +79,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ]
       },
       :mysql => {
-        :version => "5.5",
+        :version => "5.1",
         :server_root_password => "password"
       }
     }
