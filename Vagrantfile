@@ -26,7 +26,9 @@ SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "nrel/CentOS-6.5-i386"
+  config.vm.box = "centos-6.7-i386"
+  config.vm.box_url = "http://downloads.sourceforge.net/project/nrel-vagrant-boxes/CentOS-6.7-i386-v20151108.box?r=&ts=1447201364&use_mirror=jaist"
+
   config.vm.hostname = "centos"
 
   config.vm.network :forwarded_port, guest: 80, host: 8888
